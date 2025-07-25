@@ -32,6 +32,14 @@ enum SYS_TYPE
   MACos,
   Linux
 };
+
+
+enum DIS_TYPE
+{
+    DIS_SENG_TYPE,
+    DIS_RECV_TYPE,
+    DIS_OTHER,
+};
 namespace Ui {
 class MainWindow;
 }
@@ -58,6 +66,7 @@ private slots:
     void on_checkBoxPeriodicMutiSend_stateChanged(int arg1);//多行循环发送
 
     void on_checkBoxReVTime_stateChanged(int arg1);//设置是否显示接收时间的标志位
+    void on_checkSubPacket_stateChanged(int arg1);
     void on_pushButtonOpen_clicked(); //打开或关闭串口按钮槽函数
     void on_pushButtonSend_clicked();//发送按钮槽函数
 
@@ -132,6 +141,7 @@ private:
     unsigned char wirtedata[10] = {1,2,3,4,5,6,7,8,9,10};
     bool StopDis = false;//停止显示标识
     bool TimeDateDisp = false;//显示时间标志
+    bool SubPacket = false;
     bool MutiState[10];//多行选中状态
     int LastSend = 0;//多行循环发送起始位置
 
@@ -151,6 +161,8 @@ private:
     QLabel *qlbLinkRYMCU;//官网链接标签对象
     QLabel *qlbLinkSource;//源码链接标签对象
 
+
+    void PutDataToTextRev(QString stirng, DIS_TYPE type);
     void Pre_on_pushButtonSend_clicked();//多行周期发送预处理函数
     int Get_checkBoxMuti_State();//获取多行周期发送的选中状态
     void SendDataByNoOfEditLineNo(int EditLineNo);//根据状态,发送指定行的数据

@@ -155,14 +155,13 @@ void MainWindow::MyComRevSlot()
 {
     //QByteArray MyComRevBUff;//接收数据缓存
     QString StrTemp,StrTemp1,StrTimeDate;
-
+    
+    QString LineFeedString = "\r\n收- - ->●";
     //停止接收延时定时器，读取串口接收到的数据，并格式化数据
     recvDelayTimer->stop();
     MyComRevBUff = MyCom.readAll();
 
     StrTemp = QString::fromLocal8Bit(MyComRevBUff);
-
-
 
     //接收流量统计，并显示到状态栏
     ComRevSum += MyComRevBUff.size();
@@ -170,47 +169,74 @@ void MainWindow::MyComRevSlot()
 
     //获取串口数据接收的系统时间，备后续使用
     curDateTime = QDateTime::currentDateTime();
-    StrTimeDate = curDateTime.toString("[yyyy-MM-dd hh:mm:ss.zzz] ");
+    //StrTimeDate = curDateTime.toString("[yyyy-MM-dd hh:mm:ss.zzz] ");
 
     //stm32 ISP期间不显示接收数据
     if(ISisping == 1) return;
-
+    TimeDateDisp = ui->checkBoxReVTime->checkState();
     //开始显示数据，显示模式包括：是否16进制，是否显示接收时间
     if(ui->checkBoxRevHex->checkState() == false)//正常文本显示
     {
-
-        if(TimeDateDisp == true)//显示接收时间
-        {
-            StrTemp.prepend(StrTimeDate);//前面添加时间
-            StrTemp.append("\r\n");//后面添加换行
-        }
+        // if(TimeDateDisp == true)//显示接收时间
+        // {
+        //     StrTemp.prepend(StrTimeDate);//前面添加时间
+        //     StrTemp.append("\r\n");//后面添加换行
+        // }
         if(StopDis == false)
-         {
+        {
             ui->TextRev->insertPlainText(StrTemp);//显示数据
             ui->TextRev->moveCursor(QTextCursor::End);//光标移动到文本末尾
         }
     }
     else //16进制显示
     {
-       StrTemp =  MyComRevBUff.toHex().toUpper();//转换为16进制数，并大写
+        StrTemp =  MyComRevBUff.toHex().toUpper();//转换为16进制数，并大写
 
-       for(int i = 0; i<StrTemp.length (); i+=2)//整理字符串，即添加空格
-       {
-           StrTemp1 += StrTemp.mid (i,2);
-           StrTemp1 += " ";
-       }
+        for(int i = 0; i<StrTemp.length (); i+=2)//整理字符串，即添加空格
+        {
+            StrTemp1 += StrTemp.mid (i,2);
+            StrTemp1 += " "; // 每个字节后添加空格，最终格式为"XX XX XX "
+        }
 
-       if(TimeDateDisp == true)//添加时间显示
-       {
-           StrTemp1.prepend(StrTimeDate);//前面添加时间
-           StrTemp1.append("\r\n");//后面添加换行
-       }
-       if(StopDis == false)
-       {
-         ui->TextRev->insertPlainText(StrTemp1);//显示数据
-         ui->TextRev->moveCursor(QTextCursor::End);//光标移动到文本末尾
-       }
-    }  
+        // 修正1：调整正则表达式，匹配带结尾空格的完整模式 "FC XX XX 0E "
+        //QRegularExpression pattern("(FA [0-9A-F]{2} [0-9A-F]{2} 0E )");
+        QRegularExpression pattern("(FA [0-9A-F]{2} 0[0-9A-F]{1})");
+        QRegularExpressionMatchIterator it = pattern.globalMatch(StrTemp1);
+        
+        // 先收集所有匹配的起始位置
+        QList<int> matchStarts;
+        while (it.hasNext()) {
+            QRegularExpressionMatch match = it.next();
+            matchStarts.append(match.capturedStart());
+        }
+
+        // 处理每个匹配区间（当前开始到下一个开始）并直接传递
+        for (int i = 0; i < matchStarts.size(); ++i) {
+            int start = matchStarts[i];
+            // 计算结束位置：如果是最后一个匹配，则到字符串末尾，否则到下一个匹配的开始
+            int end = (i == matchStarts.size() - 1) ? StrTemp1.length() : matchStarts[i + 1];
+            
+            // 截取从当前匹配开始到下一个匹配开始（或字符串结束）的内容
+            QString subString = StrTemp1.mid(start, end - start);
+            
+            if(StopDis == false)
+            {
+                // 直接将子字符串传递给PutDataToTextRev函数
+                PutDataToTextRev(subString, DIS_RECV_TYPE);
+            }
+
+
+        }
+
+
+        // if(StopDis == false)
+        // {
+        //     for(size_t i = 0 ; i < packets.size(); i++)
+        //     {
+        //         PutDataToTextRev(packets[i],DIS_RECV_TYPE)
+        //     }
+        // }
+    }
 
     //串口接收到数据标识
     //ISMyComRevData = 1;
@@ -468,6 +494,7 @@ void MainWindow::on_pushButtonSend_clicked()
 {
    QByteArray ComSendData;
    QString SendTemp;
+   QString SendDisplay;
    int temp;
   // char *buff_Hex = NULL;
     char buff_Hex[65535] ={0};
@@ -475,18 +502,18 @@ void MainWindow::on_pushButtonSend_clicked()
 
    //读取发送窗口数据
    SendTemp = ui->TextSend->toPlainText();
-
+   SendDisplay = SendTemp;
 
    //判断发送格式，并格式化数据
    if(ui->checkBoxSendHex->checkState() != false)//16进制发送
    {
        SendTemp = SendTemp.toUtf8();
-
        SendTemp.remove(QChar(' '),Qt::CaseInsensitive);
        SendTemp.remove(QChar('\n'),Qt::CaseInsensitive);
        SendTemp.remove(QChar('\r'),Qt::CaseInsensitive);
 
-
+       SendDisplay.remove(QChar('\n'),Qt::CaseInsensitive);
+       SendDisplay.remove(QChar('\r'),Qt::CaseInsensitive);
 
        if(ui->checkBoxAddNewShift->checkState() != false)
        {
@@ -541,6 +568,7 @@ void MainWindow::on_pushButtonSend_clicked()
          //发送数据
          //buff_Hex[0] = len_Hex;
          temp = MyCom.write(buff_Hex,len_Hex/2);
+
        }
        else
        {
@@ -559,7 +587,9 @@ void MainWindow::on_pushButtonSend_clicked()
         //发送数据
         temp = MyCom.write(ComSendData);
    }
-
+    //SendDisplay.append('\r\n◎');
+    SendDisplay.insert(0,"\r\n发- - ->◎");
+    ui->TextRev->insertPlainText(SendDisplay);
    //统计发送流量，并显示在状态栏
    if(temp)
    {
@@ -604,14 +634,14 @@ void MainWindow::on_pushButtonClearSend_clicked()
  ***********************************************************/
 void MainWindow::on_pushButtonStopRev_clicked()
 {
-    if(ui->pushButtonStopRev->text() == "停止显示")
+    if(ui->pushButtonStopRev->text() == "冻结显示")
     {
         ui->pushButtonStopRev->setText("继续显示");
         StopDis = true;
     }
     else
     {
-        ui->pushButtonStopRev->setText("停止显示");
+        ui->pushButtonStopRev->setText("冻结显示");
         StopDis = false;
     }
 
@@ -700,6 +730,27 @@ void MainWindow::on_checkBoxReVTime_stateChanged(int arg1)
         TimeDateDisp = true;
     }
 }
+
+/***********************************************************
+ *设置是否分包
+ * rt
+ ***********************************************************/
+void MainWindow::on_checkSubPacket_stateChanged(int arg1)
+{
+    if(arg1 == false)//未选中
+    {
+        SubPacket = false;//接收串口数据时间显示标志位
+    }
+    else
+    {
+        SubPacket = true;
+
+
+    }
+}
+
+
+
 //读取文件,并显示在发送窗口
 
 void MainWindow::on_pushButtonRdFile_clicked()
@@ -831,6 +882,7 @@ void MainWindow::on_pushButtonMuti1_clicked()
     QString Strtemp = ui->lineEditMuti1->text();
     ui->TextSend->clear();
     ui->TextSend->insertPlainText(Strtemp);
+    ui->TextSend->insertPlainText(Strtemp);
     ui->TextSend->moveCursor(QTextCursor::End);
 
     MainWindow::on_pushButtonSend_clicked();
@@ -952,6 +1004,35 @@ void MainWindow::on_pushButtonMutiReset_clicked()
     ui->lineEditMuti8->clear();
     ui->lineEditMuti9->clear();
     ui->lineEditMuti10->clear();
+}
+
+
+void MainWindow::PutDataToTextRev(QString stirng, DIS_TYPE type)
+{
+    QString SendDataHeadString = "\r\n发- - ->◎";
+    QString RecvDataHeadString = "\r\n收- - ->●";
+
+    QString DispalyString;
+
+    if (TimeDateDisp) {
+        DispalyString.insert(0,curDateTime.toString("[hh:mm:ss.zzz]")); // 换行后添加时间（如果启用）
+    }
+
+    switch(type)
+    {
+        case DIS_SENG_TYPE:
+            DispalyString = SendDataHeadString + stirng;
+        break;
+        case DIS_RECV_TYPE:
+            DispalyString = RecvDataHeadString + stirng;
+        break;
+        case DIS_OTHER:
+        break;
+    }
+
+
+    ui->TextRev->insertPlainText(DispalyString);
+    ui->TextRev->moveCursor(QTextCursor::End);
 }
 
 /***********************************************************
