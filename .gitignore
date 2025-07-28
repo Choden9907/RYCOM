@@ -24,3 +24,9 @@
 *.Debug
 *.Release
 *.bak
+*.stash
+*.user
+debug/*
+release/*
+.vs
+.vscode

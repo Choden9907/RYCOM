@@ -15,7 +15,7 @@
 *  实现串口ISP底层驱动
 *                                                              	
 ************************************************************/
-#include <mycom.h>
+#include <src/mycom.h>
 
 typedef struct {
     char bootloaderversion;    //1字节，bootloader版本

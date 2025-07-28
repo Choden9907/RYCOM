@@ -15,9 +15,9 @@
 *  实现串口ISP底层驱动
 *                                                              	
 ************************************************************/
-#include <mycom.h>
-#include <ryisp.h>
-#include "esp32/esp32_protocol.h"
+#include <src/mycom.h>
+#include <src/ryisp.h>
+#include "src/include/esp32/esp32_protocol.h"
 #include <qdebug.h>
 
 //#define QT_DEBUG  //release版本注销，防止调试信息占用资源

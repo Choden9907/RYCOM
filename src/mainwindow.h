@@ -11,12 +11,12 @@
 #include <QTextCodec>
 #include <QScreen>
 
-#include <ryisp.h>
-#include <mycom.h>
-#include <HexToBin.h>
-#include <ry_ymodem.h>
-#include <myfilewatcher.h>
-#include <ryesp32isp.h>
+#include <src/ryisp.h>
+#include <src/mycom.h>
+#include <src/HexToBin.h>
+#include <src/ry_ymodem.h>
+#include <src/myfilewatcher.h>
+#include <src/ryesp32isp.h>
 
 #include"QDebug"
 #include"QObject"

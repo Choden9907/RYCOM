@@ -587,9 +587,7 @@ void MainWindow::on_pushButtonSend_clicked()
         //发送数据
         temp = MyCom.write(ComSendData);
    }
-    //SendDisplay.append('\r\n◎');
-    SendDisplay.insert(0,"\r\n发- - ->◎");
-    ui->TextRev->insertPlainText(SendDisplay);
+    PutDataToTextRev(SendDisplay, DIS_SENG_TYPE);
    //统计发送流量，并显示在状态栏
    if(temp)
    {

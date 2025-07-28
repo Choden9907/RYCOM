@@ -613,6 +613,9 @@ QRadioButton::indicator{width:25px;height:25px;border-radius:12px;}</string>
       <property name="text">
        <string>分包</string>
       </property>
+      <property name="checked">
+       <bool>true</bool>
+      </property>
      </widget>
      <widget class="QTextEdit" name="textEdit">
       <property name="geometry">

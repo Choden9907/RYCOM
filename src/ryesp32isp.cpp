@@ -1,4 +1,4 @@
-#include <ryesp32isp.h>
+#include <src/ryesp32isp.h>
 
 target_registers_t *s_reg = NULL;
 target_chip_t s_target = ESP_UNKNOWN_CHIP;

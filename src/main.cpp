@@ -1,6 +1,6 @@
-#include "mainwindow.h"
+#include "src\mainwindow.h"
 #include <QApplication>
-#include <ryisp.h>
+#include <src/ryisp.h>
 #include <QStyleFactory>
 
 int main(int argc, char *argv[])

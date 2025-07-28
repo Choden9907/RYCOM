@@ -1,5 +1,5 @@
 <RCC>
     <qresource prefix="/">
-        <file>rymculogo.ico</file>
+        <file>ico/rymculogo.ico</file>
     </qresource>
 </RCC>

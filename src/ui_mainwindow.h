@@ -63,6 +63,7 @@ public:
     QGroupBox *groupBox;
     QCheckBox *checkSubPacket;
     QTextEdit *textEdit;
+    QPushButton *pushButtonSaveRev_2;
     QGroupBox *groupBoxSend;
     QPlainTextEdit *TextSend;
     QPushButton *pushButtonSend;
@@ -306,9 +307,13 @@ public:
         checkSubPacket = new QCheckBox(groupBox);
         checkSubPacket->setObjectName(QString::fromUtf8("checkSubPacket"));
         checkSubPacket->setGeometry(QRect(10, 10, 51, 16));
+        checkSubPacket->setChecked(true);
         textEdit = new QTextEdit(groupBox);
         textEdit->setObjectName(QString::fromUtf8("textEdit"));
         textEdit->setGeometry(QRect(0, 30, 61, 16));
+        pushButtonSaveRev_2 = new QPushButton(groupBoxRevSet);
+        pushButtonSaveRev_2->setObjectName(QString::fromUtf8("pushButtonSaveRev_2"));
+        pushButtonSaveRev_2->setGeometry(QRect(0, 10, 91, 22));
         groupBoxSend = new QGroupBox(centralWidget);
         groupBoxSend->setObjectName(QString::fromUtf8("groupBoxSend"));
         groupBoxSend->setGeometry(QRect(180, 392, 541, 141));
@@ -752,6 +757,7 @@ public:
         checkBoxRevHex->setText(QCoreApplication::translate("MainWindow", "\345\215\201\345\205\255\350\277\233\345\210\266", nullptr));
         groupBox->setTitle(QString());
         checkSubPacket->setText(QCoreApplication::translate("MainWindow", "\345\210\206\345\214\205", nullptr));
+        pushButtonSaveRev_2->setText(QCoreApplication::translate("MainWindow", "\344\277\235\345\255\230\346\226\207\344\273\266", nullptr));
         groupBoxSend->setTitle(QCoreApplication::translate("MainWindow", "\345\217\221\351\200\201\345\214\272", nullptr));
         TextSend->setPlainText(QString());
         pushButtonSend->setText(QCoreApplication::translate("MainWindow", "\345\217\221\351\200\201", nullptr));

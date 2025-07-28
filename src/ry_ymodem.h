@@ -14,7 +14,7 @@
 *  实现Ymodem发送功能
 *
 ************************************************************/
-#include <mycom.h>
+#include <src/mycom.h>
 #include <stdint.h>
 #include <QFile>
 #include <QFileInfo>

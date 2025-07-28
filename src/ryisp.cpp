@@ -1,4 +1,4 @@
-#include <ryisp.h>
+#include <src/ryisp.h>
 
 DeviceInfo_t DeviceInfo;//赋值
 unsigned int ISPBeginAddr;
