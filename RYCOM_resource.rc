@@ -1,6 +1,6 @@
 #include <windows.h>
 
-IDI_ICON1	ICON	DISCARDABLE	"E:/Project/RYCOM_Copy/src/resource/ico/rymculogo.ico"
+IDI_ICON1	ICON	DISCARDABLE	"E:\\Project\\RYCOM\\src\\resource\\ico\\rymculogo.ico"
 
 VS_VERSION_INFO VERSIONINFO
 	FILEVERSION 0,0,0,0

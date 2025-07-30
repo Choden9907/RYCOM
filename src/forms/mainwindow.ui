@@ -512,10 +512,10 @@ QRadioButton::indicator{width:25px;height:25px;border-radius:12px;}</string>
     <widget class="QPushButton" name="pushButtonSaveRev">
      <property name="geometry">
       <rect>
-       <x>70</x>
-       <y>30</y>
-       <width>91</width>
-       <height>22</height>
+       <x>10</x>
+       <y>20</y>
+       <width>61</width>
+       <height>21</height>
       </rect>
      </property>
      <property name="text">
@@ -525,23 +525,23 @@ QRadioButton::indicator{width:25px;height:25px;border-radius:12px;}</string>
     <widget class="QPushButton" name="pushButtonStopRev">
      <property name="geometry">
       <rect>
-       <x>70</x>
-       <y>55</y>
-       <width>91</width>
-       <height>22</height>
+       <x>10</x>
+       <y>50</y>
+       <width>61</width>
+       <height>21</height>
       </rect>
      </property>
      <property name="text">
-      <string>冻结显示</string>
+      <string>显示中</string>
      </property>
     </widget>
     <widget class="QPushButton" name="pushButtonClearRev">
      <property name="geometry">
       <rect>
-       <x>70</x>
-       <y>79</y>
-       <width>91</width>
-       <height>22</height>
+       <x>10</x>
+       <y>80</y>
+       <width>61</width>
+       <height>21</height>
       </rect>
      </property>
      <property name="text">
@@ -551,8 +551,8 @@ QRadioButton::indicator{width:25px;height:25px;border-radius:12px;}</string>
     <widget class="QCheckBox" name="checkBoxReVTime">
      <property name="geometry">
       <rect>
-       <x>76</x>
-       <y>114</y>
+       <x>80</x>
+       <y>20</y>
        <width>77</width>
        <height>22</height>
       </rect>
@@ -570,8 +570,8 @@ QRadioButton::indicator{width:25px;height:25px;border-radius:12px;}</string>
      </property>
      <property name="geometry">
       <rect>
-       <x>76</x>
-       <y>137</y>
+       <x>80</x>
+       <y>50</y>
        <width>77</width>
        <height>22</height>
       </rect>
@@ -594,38 +594,52 @@ QRadioButton::indicator{width:25px;height:25px;border-radius:12px;}</string>
       <rect>
        <x>10</x>
        <y>110</y>
-       <width>71</width>
-       <height>51</height>
+       <width>151</width>
+       <height>41</height>
       </rect>
      </property>
      <property name="title">
       <string/>
      </property>
-     <widget class="QCheckBox" name="checkSubPacket">
-      <property name="geometry">
-       <rect>
-        <x>10</x>
-        <y>10</y>
-        <width>51</width>
-        <height>16</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>分包</string>
-      </property>
-      <property name="checked">
-       <bool>true</bool>
-      </property>
-     </widget>
-     <widget class="QTextEdit" name="textEdit">
+     <widget class="QPlainTextEdit" name="SubPacketText">
       <property name="geometry">
        <rect>
         <x>0</x>
-        <y>30</y>
-        <width>61</width>
-        <height>16</height>
+        <y>20</y>
+        <width>151</width>
+        <height>21</height>
        </rect>
       </property>
+     </widget>
+     <widget class="QComboBox" name="comboBoxSubPacket">
+      <property name="geometry">
+       <rect>
+        <x>30</x>
+        <y>2</y>
+        <width>91</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>11</pointsize>
+       </font>
+      </property>
+      <item>
+       <property name="text">
+        <string/>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>分包</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>移除包</string>
+       </property>
+      </item>
      </widget>
     </widget>
    </widget>
@@ -695,13 +709,23 @@ QRadioButton::indicator{width:25px;height:25px;border-radius:12px;}</string>
     <property name="title">
      <string>接收区</string>
     </property>
-    <widget class="QPlainTextEdit" name="TextRev">
+    <widget class="QTextBrowser" name="TextRev">
      <property name="geometry">
       <rect>
-       <x>10</x>
-       <y>30</y>
-       <width>321</width>
-       <height>321</height>
+       <x>5</x>
+       <y>11</y>
+       <width>331</width>
+       <height>341</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QPlainTextEdit" name="TextRevcpy">
+     <property name="geometry">
+      <rect>
+       <x>160</x>
+       <y>250</y>
+       <width>171</width>
+       <height>101</height>
       </rect>
      </property>
      <property name="layoutDirection">

@@ -89,6 +89,19 @@ private slots:
     void on_pushButtonMuti9_clicked();
     void on_pushButtonMuti10_clicked();
 
+    void on_lineEditMuti1_textChanged();
+    void on_lineEditMuti2_textChanged();
+    void on_lineEditMuti3_textChanged();
+    void on_lineEditMuti4_textChanged();
+    void on_lineEditMuti5_textChanged();
+    void on_lineEditMuti6_textChanged();
+    void on_lineEditMuti7_textChanged();
+    void on_lineEditMuti8_textChanged();
+    void on_lineEditMuti9_textChanged();
+    void on_lineEditMuti10_textChanged();
+
+
+
     void on_pushButtonMutiReset_clicked();//清除多行文本
 
     void on_pushButton_EraseAll_clicked();
@@ -119,7 +132,6 @@ private slots:
 
     void on_radioButton_combine_clicked();
 
-
     void on_pushButton_Open_BOOT_Combine_clicked();
 
     void on_pushButton_Open_PART_clicked();
@@ -134,7 +146,7 @@ private slots:
 
 private:
     Ui::MainWindow *ui;
-
+    QSettings settings;   
     //添加自定义变量
     //QSerialPort MyCom;//串口对象，项目中唯一的串口对象
     long ComSendSum,ComRevSum;//发送和接收流量统计变量
@@ -161,38 +173,35 @@ private:
     QLabel *qlbLinkRYMCU;//官网链接标签对象
     QLabel *qlbLinkSource;//源码链接标签对象
 
-
-    void PutDataToTextRev(QString stirng, DIS_TYPE type);
-    void Pre_on_pushButtonSend_clicked();//多行周期发送预处理函数
-    int Get_checkBoxMuti_State();//获取多行周期发送的选中状态
-    void SendDataByNoOfEditLineNo(int EditLineNo);//根据状态,发送指定行的数据
-    void time_update(); //时间更新槽函数，状态栏显示时间
-
-    void timer_FileChanged();//用于监控文件更改
-
-    void setNumOnLabel(QLabel *lbl, QString strS, long num);//设置标签内容
-
-    //文件打开、保存、编码转换函数
-    bool openTextByIODevice(const QString &aFileName);
-    bool saveTextByIODevice(const QString &aFileName);
-    QString byteArrayToUnicode(const QByteArray &array);//编码格式转换
-
-    void changeObjectSize(const QObject &o, double objectRate);//调整控件大小
-    void refreshDPI(SYS_TYPE system);//刷新界面
-    QScreen* screen;
-    double myobjectRate;//dpi比例，用于调整主窗口的大小
-    char ISisping;//1：表示正在进行STM32程序下载，2：表示正在进行ESP32程序下载
-
-    RY_Ymodem ry_ymodem;
-    void PrintFileinfo(void);
-    void ResumeFormISP(void);
-    void ResumeFormESP32ISP(void);
-    esp_loader_error_t esp32_flash_binary(const uint8_t *bin, size_t size, size_t address,location_code_t location);
-
     QByteArray BOOT_Combine_ByteArray;//存储ESP32 bootloader.bin或者Combine.bin
     QByteArray PART_ByteArray;//存储ESP32 partition-table.bin
     QByteArray APP_ByteArray;//存储ESP32 app.bin
 
+    QScreen* screen;
+    double myobjectRate;//dpi比例，用于调整主窗口的大小
+    char ISisping;//1：表示正在进行STM32程序下载，2：表示正在进行ESP32程序下载
+    RY_Ymodem ry_ymodem;
+
+private:
+    void PutDataToTextRev(QString stirng, DIS_TYPE type);
+    void SaveConfig();
+    void LoadConfig();
+    void Pre_on_pushButtonSend_clicked();//多行周期发送预处理函数
+    int Get_checkBoxMuti_State();//获取多行周期发送的选中状态
+    void SendDataByNoOfEditLineNo(int EditLineNo);//根据状态,发送指定行的数据
+    void time_update(); //时间更新槽函数，状态栏显示时间
+    void timer_FileChanged();//用于监控文件更改
+    void setNumOnLabel(QLabel *lbl, QString strS, long num);//设置标签内容
+    //文件打开、保存、编码转换函数
+    bool openTextByIODevice(const QString &aFileName);
+    bool saveTextByIODevice(const QString &aFileName);
+    QString byteArrayToUnicode(const QByteArray &array);//编码格式转换
+    void changeObjectSize(const QObject &o, double objectRate);//调整控件大小
+    void refreshDPI(SYS_TYPE system);//刷新界面
+    void PrintFileinfo(void);
+    void ResumeFormISP(void);
+    void ResumeFormESP32ISP(void);
+    esp_loader_error_t esp32_flash_binary(const uint8_t *bin, size_t size, size_t address,location_code_t location);
 };
 
 #endif // MAINWINDOW_H

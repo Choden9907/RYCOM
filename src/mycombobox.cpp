@@ -27,6 +27,7 @@ void myComboBox::scanActivePort()
         //QString serialPortInfo = info.portName() + ": " + info.systemLocation();// 串口设备的系统位置，没什么用
         serialPortName << serialPortInfo;
     }
+
     //删除mac重复的串口，名称中包含tty.删除，保留包含cu.的。
     QStringList templist;
     templist = serialPortName.filter("tty.");
@@ -35,6 +36,7 @@ void myComboBox::scanActivePort()
     // 可用串口号，显示到串口选择下拉框中
     this->addItems(serialPortName);
     this->model()->sort(0, Qt::AscendingOrder);//从小到达排序
+
 }
 
 // 重写鼠标点击事件

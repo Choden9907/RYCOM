@@ -1,6 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-
+#include <QDebug>
 /***********************************************************
  * 窗口构造函数，初始化工作在这里完成！
  * 1.失能和隐藏相应控件
@@ -10,6 +10,7 @@
  ***********************************************************/
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
+    settings("RYCom_config.ini", QSettings::IniFormat),
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
@@ -96,7 +97,10 @@ MainWindow::MainWindow(QWidget *parent) :
          ui->progressBar->setVisible(false);
          //串口指示灯设置为只读控件，屏蔽鼠标点击事件
          //ui->radioButton_led->setAttribute(Qt::WA_TransparentForMouseEvents,QIODevice::ReadOnly);
+
+         LoadConfig();
 }
+
 
 /***********************************************************
  * 窗口析造函数！
@@ -156,7 +160,6 @@ void MainWindow::MyComRevSlot()
     //QByteArray MyComRevBUff;//接收数据缓存
     QString StrTemp,StrTemp1,StrTimeDate;
     
-    QString LineFeedString = "\r\n收- - ->●";
     //停止接收延时定时器，读取串口接收到的数据，并格式化数据
     recvDelayTimer->stop();
     MyComRevBUff = MyCom.readAll();
@@ -173,6 +176,8 @@ void MainWindow::MyComRevSlot()
 
     //stm32 ISP期间不显示接收数据
     if(ISisping == 1) return;
+    //冻结数据
+    if(StopDis == true)return;
     TimeDateDisp = ui->checkBoxReVTime->checkState();
     //开始显示数据，显示模式包括：是否16进制，是否显示接收时间
     if(ui->checkBoxRevHex->checkState() == false)//正常文本显示
@@ -198,16 +203,37 @@ void MainWindow::MyComRevSlot()
             StrTemp1 += " "; // 每个字节后添加空格，最终格式为"XX XX XX "
         }
 
-        // 修正1：调整正则表达式，匹配带结尾空格的完整模式 "FC XX XX 0E "
-        //QRegularExpression pattern("(FA [0-9A-F]{2} [0-9A-F]{2} 0E )");
-        QRegularExpression pattern("(FA [0-9A-F]{2} 0[0-9A-F]{1})");
-        QRegularExpressionMatchIterator it = pattern.globalMatch(StrTemp1);
+        if(SubPacket);
+        //不做处理
+        if(ui->comboBoxSubPacket->currentText() == "")
+        {
+            PutDataToTextRev(StrTemp1, DIS_RECV_TYPE);
+            return;
+        }
         
+        // 修正1：调整正则表达式，匹配带结尾空格的完整模式 "FC XX XX 0E "
+        //QRegularExpression pattern("(FA [0-9A-F]{2} [0-9A-F]{2} 0E )");toPlainText
+        QString reg = ui->SubPacketText->toPlainText();
+        if(reg.isEmpty())
+        {
+            PutDataToTextRev(StrTemp1, DIS_RECV_TYPE);
+            return;
+        }
+        //QRegularExpression pattern("(FA [0-9A-F]{2} 0[0-9A-F]{1})");
+        QRegularExpression pattern(reg);
+        QRegularExpressionMatchIterator it = pattern.globalMatch(StrTemp1);
+
         // 先收集所有匹配的起始位置
         QList<int> matchStarts;
         while (it.hasNext()) {
             QRegularExpressionMatch match = it.next();
             matchStarts.append(match.capturedStart());
+        }
+
+        if(matchStarts.isEmpty())
+        {
+            PutDataToTextRev(StrTemp1, DIS_RECV_TYPE);
+            return;
         }
 
         // 处理每个匹配区间（当前开始到下一个开始）并直接传递
@@ -218,24 +244,12 @@ void MainWindow::MyComRevSlot()
             
             // 截取从当前匹配开始到下一个匹配开始（或字符串结束）的内容
             QString subString = StrTemp1.mid(start, end - start);
-            
-            if(StopDis == false)
-            {
-                // 直接将子字符串传递给PutDataToTextRev函数
-                PutDataToTextRev(subString, DIS_RECV_TYPE);
-            }
 
+            // 直接将子字符串传递给PutDataToTextRev函数
+            PutDataToTextRev(subString, DIS_RECV_TYPE);
 
         }
 
-
-        // if(StopDis == false)
-        // {
-        //     for(size_t i = 0 ; i < packets.size(); i++)
-        //     {
-        //         PutDataToTextRev(packets[i],DIS_RECV_TYPE)
-        //     }
-        // }
     }
 
     //串口接收到数据标识
@@ -409,7 +423,7 @@ void MainWindow::on_pushButtonOpen_clicked()
     if(ISisping == 2)
     {
         ComParity = QSerialPort::NoParity;//ESP32下载校验位必须为NONE
-         my_baud = QSerialPort::Baud115200;//同步时必须为115200,如果正在同步时序中，强制设置成115200
+        my_baud = QSerialPort::Baud115200;//同步时必须为115200,如果正在同步时序中，强制设置成115200
     }
     //初始化串口：设置端口号，波特率，数据位，停止位，校验方式等
     MyCom.setBaudRate(my_baud);
@@ -417,7 +431,11 @@ void MainWindow::on_pushButtonOpen_clicked()
     MyCom.setStopBits(ComstopBits);
     MyCom.setParity(ComParity);
     MyCom.setPortName(spTxt);   //MyCom.setPortName(ui->comboBoxNo->currentText());
-
+    settings.setValue("Serial/ComBaud",my_baud);
+    settings.setValue("Serial/ComdataBits",ComdataBits);
+    settings.setValue("Serial/ComstopBits",ComstopBits);
+    settings.setValue("Serial/ComParity",ui->comboBoxCheck->currentText());
+    settings.setValue("Serial/ComNo",spTxt);
     //打开串口
     if(ui->pushButtonOpen->text() == "打开串口")
     {
@@ -632,14 +650,14 @@ void MainWindow::on_pushButtonClearSend_clicked()
  ***********************************************************/
 void MainWindow::on_pushButtonStopRev_clicked()
 {
-    if(ui->pushButtonStopRev->text() == "冻结显示")
+    if(ui->pushButtonStopRev->text() == "已冻结")
     {
-        ui->pushButtonStopRev->setText("继续显示");
+        ui->pushButtonStopRev->setText("显示中");
         StopDis = true;
     }
     else
     {
-        ui->pushButtonStopRev->setText("冻结显示");
+        ui->pushButtonStopRev->setText("已冻结");
         StopDis = false;
     }
 
@@ -738,10 +756,12 @@ void MainWindow::on_checkSubPacket_stateChanged(int arg1)
     if(arg1 == false)//未选中
     {
         SubPacket = false;//接收串口数据时间显示标志位
+        ui->SubPacketText->setEnabled(false);
     }
     else
     {
         SubPacket = true;
+        ui->SubPacketText->setEnabled(true);
 
 
     }
@@ -880,12 +900,11 @@ void MainWindow::on_pushButtonMuti1_clicked()
     QString Strtemp = ui->lineEditMuti1->text();
     ui->TextSend->clear();
     ui->TextSend->insertPlainText(Strtemp);
-    ui->TextSend->insertPlainText(Strtemp);
     ui->TextSend->moveCursor(QTextCursor::End);
-
     MainWindow::on_pushButtonSend_clicked();
 
 }
+
 
 void MainWindow::on_pushButtonMuti2_clicked()
 {
@@ -986,6 +1005,59 @@ void MainWindow::on_pushButtonMuti10_clicked()
 
 }
 
+
+
+void MainWindow::on_lineEditMuti1_textChanged()
+{
+    settings.setValue("MutiData/Muti1",ui->lineEditMuti1->text());
+}
+
+void MainWindow::on_lineEditMuti2_textChanged()
+{
+    settings.setValue("MutiData/Muti2",ui->lineEditMuti2->text());
+}
+
+void MainWindow::on_lineEditMuti3_textChanged()
+{
+    settings.setValue("MutiData/Muti3",ui->lineEditMuti3->text());
+}
+
+void MainWindow::on_lineEditMuti4_textChanged()
+{
+    settings.setValue("MutiData/Muti4",ui->lineEditMuti4->text());
+}
+
+void MainWindow::on_lineEditMuti5_textChanged()
+{
+    settings.setValue("MutiData/Muti5",ui->lineEditMuti5->text());
+}
+
+void MainWindow::on_lineEditMuti6_textChanged()
+{
+    settings.setValue("MutiData/Muti6",ui->lineEditMuti6->text());
+}
+
+void MainWindow::on_lineEditMuti7_textChanged()
+{
+    settings.setValue("MutiData/Muti7",ui->lineEditMuti7->text());
+}
+
+void MainWindow::on_lineEditMuti8_textChanged()
+{
+    settings.setValue("MutiData/Muti8",ui->lineEditMuti8->text());
+}
+
+void MainWindow::on_lineEditMuti9_textChanged()
+{
+    settings.setValue("MutiData/Muti9",ui->lineEditMuti9->text());
+}
+
+void MainWindow::on_lineEditMuti10_textChanged()
+{
+    settings.setValue("MutiData/Muti10",ui->lineEditMuti10->text());
+}
+
+
 /***********************************************************
 *清除多行文本
 *1.清空多行文本
@@ -1007,8 +1079,8 @@ void MainWindow::on_pushButtonMutiReset_clicked()
 
 void MainWindow::PutDataToTextRev(QString stirng, DIS_TYPE type)
 {
-    QString SendDataHeadString = "\r\n发- - ->◎";
-    QString RecvDataHeadString = "\r\n收- - ->●";
+    QString SendDataHeadString = "发- - ->◎";
+    QString RecvDataHeadString = "收- - ->●";
 
     QString DispalyString;
 
@@ -1016,21 +1088,87 @@ void MainWindow::PutDataToTextRev(QString stirng, DIS_TYPE type)
         DispalyString.insert(0,curDateTime.toString("[hh:mm:ss.zzz]")); // 换行后添加时间（如果启用）
     }
 
+    //插入换行
+    DispalyString.insert(0,"\r\n"); // 换行后添加时间（如果启用）
     switch(type)
     {
         case DIS_SENG_TYPE:
-            DispalyString = SendDataHeadString + stirng;
+            DispalyString.append(SendDataHeadString + stirng);
         break;
         case DIS_RECV_TYPE:
-            DispalyString = RecvDataHeadString + stirng;
+            DispalyString.append(RecvDataHeadString + stirng);
         break;
         case DIS_OTHER:
+            DispalyString = stirng;
         break;
     }
 
-
     ui->TextRev->insertPlainText(DispalyString);
     ui->TextRev->moveCursor(QTextCursor::End);
+}
+
+
+void MainWindow::SaveConfig()
+{
+
+}
+
+
+void MainWindow::LoadConfig()
+{
+    //串口
+    //串口号
+    QString ComNo = settings.value("Serial/ComNo","").toString();
+    int ComNoIndex = ui->comboBoxNo->findText(ComNo,Qt::MatchContains);
+    if(ComNoIndex >= 0)
+    {
+        ui->comboBoxNo->setCurrentIndex(ComNoIndex);
+    }
+    //波特率
+    QString ComBaud = settings.value("Serial/ComBaud","").toString();
+    int ComBaudIndex = ui->comboBoxComBaud->findText(ComBaud,Qt::MatchExactly);
+    if(ComBaudIndex >= 0)
+    {
+        ui->comboBoxComBaud->setCurrentIndex(ComBaudIndex);
+    }
+
+    //数据位
+    QString ComdataBits = settings.value("Serial/ComdataBits","").toString();
+    int ComdataIndex = ui->comboBoxData->findText(ComdataBits,Qt::MatchExactly);
+    if(ComdataIndex >= 0)
+    {
+        ui->comboBoxData->setCurrentIndex(ComdataIndex);
+    }
+
+    //停止位
+    QString ComstopBits = settings.value("Serial/ComstopBits","").toString();
+    int ComstopBitsIndex = ui->comboBoxStop->findText(ComstopBits,Qt::MatchExactly);
+    if(ComstopBitsIndex >= 0)
+    {
+        ui->comboBoxStop->setCurrentIndex(ComstopBitsIndex);
+    }
+
+    //校验位
+    QString ComParity = settings.value("Serial/ComParity","").toString();
+    int ComParityIndex = ui->comboBoxCheck->findText(ComParity,Qt::MatchExactly);
+    qDebug("ComParityIndex:%d",ComParityIndex);
+    if(ComParityIndex >= 0)
+    {
+        ui->comboBoxCheck->setCurrentIndex(ComParityIndex);
+    }
+
+
+    ui->lineEditMuti1->setText(settings.value("MutiData/Muti1","1").toString());
+    ui->lineEditMuti2->setText(settings.value("MutiData/Muti2","2").toString());
+    ui->lineEditMuti3->setText(settings.value("MutiData/Muti3","3").toString());
+    ui->lineEditMuti4->setText(settings.value("MutiData/Muti4","4").toString());
+    ui->lineEditMuti5->setText(settings.value("MutiData/Muti5","5").toString());
+    ui->lineEditMuti6->setText(settings.value("MutiData/Muti6","6").toString());
+    ui->lineEditMuti7->setText(settings.value("MutiData/Muti7","7").toString());
+    ui->lineEditMuti8->setText(settings.value("MutiData/Muti8","8").toString());
+    ui->lineEditMuti9->setText(settings.value("MutiData/Muti9","9").toString());
+    ui->lineEditMuti10->setText(settings.value("MutiData/Muti10","10").toString());
+
 }
 
 /***********************************************************

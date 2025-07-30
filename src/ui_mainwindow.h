@@ -23,7 +23,7 @@
 #include <QtWidgets/QPushButton>
 #include <QtWidgets/QRadioButton>
 #include <QtWidgets/QStatusBar>
-#include <QtWidgets/QTextEdit>
+#include <QtWidgets/QTextBrowser>
 #include <QtWidgets/QToolBar>
 #include <QtWidgets/QWidget>
 #include "mycombobox.h"
@@ -61,14 +61,14 @@ public:
     QCheckBox *checkBoxReVTime;
     QCheckBox *checkBoxRevHex;
     QGroupBox *groupBox;
-    QCheckBox *checkSubPacket;
-    QTextEdit *textEdit;
-    QPushButton *pushButtonSaveRev_2;
+    QPlainTextEdit *SubPacketText;
+    QComboBox *comboBoxSubPacket;
     QGroupBox *groupBoxSend;
     QPlainTextEdit *TextSend;
     QPushButton *pushButtonSend;
     QGroupBox *groupBoxRev;
-    QPlainTextEdit *TextRev;
+    QTextBrowser *TextRev;
+    QPlainTextEdit *TextRevcpy;
     QRadioButton *radioButton;
     QGroupBox *groupBoxMutiSend;
     QLabel *label_3;
@@ -283,37 +283,37 @@ public:
         groupBoxRevSet->setGeometry(QRect(10, 200, 171, 161));
         pushButtonSaveRev = new QPushButton(groupBoxRevSet);
         pushButtonSaveRev->setObjectName(QString::fromUtf8("pushButtonSaveRev"));
-        pushButtonSaveRev->setGeometry(QRect(70, 30, 91, 22));
+        pushButtonSaveRev->setGeometry(QRect(10, 20, 61, 21));
         pushButtonStopRev = new QPushButton(groupBoxRevSet);
         pushButtonStopRev->setObjectName(QString::fromUtf8("pushButtonStopRev"));
-        pushButtonStopRev->setGeometry(QRect(70, 55, 91, 22));
+        pushButtonStopRev->setGeometry(QRect(10, 50, 61, 21));
         pushButtonClearRev = new QPushButton(groupBoxRevSet);
         pushButtonClearRev->setObjectName(QString::fromUtf8("pushButtonClearRev"));
-        pushButtonClearRev->setGeometry(QRect(70, 79, 91, 22));
+        pushButtonClearRev->setGeometry(QRect(10, 80, 61, 21));
         checkBoxReVTime = new QCheckBox(groupBoxRevSet);
         checkBoxReVTime->setObjectName(QString::fromUtf8("checkBoxReVTime"));
-        checkBoxReVTime->setGeometry(QRect(76, 114, 77, 22));
+        checkBoxReVTime->setGeometry(QRect(80, 20, 77, 22));
         checkBoxReVTime->setChecked(true);
         checkBoxRevHex = new QCheckBox(groupBoxRevSet);
         checkBoxRevHex->setObjectName(QString::fromUtf8("checkBoxRevHex"));
         checkBoxRevHex->setEnabled(true);
-        checkBoxRevHex->setGeometry(QRect(76, 137, 77, 22));
+        checkBoxRevHex->setGeometry(QRect(80, 50, 77, 22));
         checkBoxRevHex->setCheckable(true);
         checkBoxRevHex->setChecked(true);
         checkBoxRevHex->setTristate(false);
         groupBox = new QGroupBox(groupBoxRevSet);
         groupBox->setObjectName(QString::fromUtf8("groupBox"));
-        groupBox->setGeometry(QRect(10, 110, 71, 51));
-        checkSubPacket = new QCheckBox(groupBox);
-        checkSubPacket->setObjectName(QString::fromUtf8("checkSubPacket"));
-        checkSubPacket->setGeometry(QRect(10, 10, 51, 16));
-        checkSubPacket->setChecked(true);
-        textEdit = new QTextEdit(groupBox);
-        textEdit->setObjectName(QString::fromUtf8("textEdit"));
-        textEdit->setGeometry(QRect(0, 30, 61, 16));
-        pushButtonSaveRev_2 = new QPushButton(groupBoxRevSet);
-        pushButtonSaveRev_2->setObjectName(QString::fromUtf8("pushButtonSaveRev_2"));
-        pushButtonSaveRev_2->setGeometry(QRect(0, 10, 91, 22));
+        groupBox->setGeometry(QRect(10, 110, 151, 41));
+        SubPacketText = new QPlainTextEdit(groupBox);
+        SubPacketText->setObjectName(QString::fromUtf8("SubPacketText"));
+        SubPacketText->setGeometry(QRect(0, 20, 151, 21));
+        comboBoxSubPacket = new QComboBox(groupBox);
+        comboBoxSubPacket->addItem(QString());
+        comboBoxSubPacket->addItem(QString());
+        comboBoxSubPacket->addItem(QString());
+        comboBoxSubPacket->setObjectName(QString::fromUtf8("comboBoxSubPacket"));
+        comboBoxSubPacket->setGeometry(QRect(30, 2, 91, 20));
+        comboBoxSubPacket->setFont(font1);
         groupBoxSend = new QGroupBox(centralWidget);
         groupBoxSend->setObjectName(QString::fromUtf8("groupBoxSend"));
         groupBoxSend->setGeometry(QRect(180, 392, 541, 141));
@@ -330,11 +330,14 @@ public:
         groupBoxRev = new QGroupBox(centralWidget);
         groupBoxRev->setObjectName(QString::fromUtf8("groupBoxRev"));
         groupBoxRev->setGeometry(QRect(180, 0, 341, 361));
-        TextRev = new QPlainTextEdit(groupBoxRev);
+        TextRev = new QTextBrowser(groupBoxRev);
         TextRev->setObjectName(QString::fromUtf8("TextRev"));
-        TextRev->setGeometry(QRect(10, 30, 321, 321));
-        TextRev->setLayoutDirection(Qt::LeftToRight);
-        TextRev->setReadOnly(true);
+        TextRev->setGeometry(QRect(5, 11, 331, 341));
+        TextRevcpy = new QPlainTextEdit(groupBoxRev);
+        TextRevcpy->setObjectName(QString::fromUtf8("TextRevcpy"));
+        TextRevcpy->setGeometry(QRect(160, 250, 171, 101));
+        TextRevcpy->setLayoutDirection(Qt::LeftToRight);
+        TextRevcpy->setReadOnly(true);
         radioButton = new QRadioButton(centralWidget);
         radioButton->setObjectName(QString::fromUtf8("radioButton"));
         radioButton->setGeometry(QRect(500, 372, 81, 16));
@@ -751,18 +754,20 @@ public:
         checkBoxAutoDownload->setText(QCoreApplication::translate("MainWindow", "\350\207\252\345\220\257\345\212\250\344\270\213\350\275\275", nullptr));
         groupBoxRevSet->setTitle(QCoreApplication::translate("MainWindow", "\346\216\245\346\224\266\350\256\276\347\275\256", nullptr));
         pushButtonSaveRev->setText(QCoreApplication::translate("MainWindow", "\344\277\235\345\255\230\346\226\207\344\273\266", nullptr));
-        pushButtonStopRev->setText(QCoreApplication::translate("MainWindow", "\345\206\273\347\273\223\346\230\276\347\244\272", nullptr));
+        pushButtonStopRev->setText(QCoreApplication::translate("MainWindow", "\346\230\276\347\244\272\344\270\255", nullptr));
         pushButtonClearRev->setText(QCoreApplication::translate("MainWindow", "\346\270\205\347\251\272\346\216\245\346\224\266\345\214\272", nullptr));
         checkBoxReVTime->setText(QCoreApplication::translate("MainWindow", "\346\216\245\346\224\266\346\227\266\351\227\264", nullptr));
         checkBoxRevHex->setText(QCoreApplication::translate("MainWindow", "\345\215\201\345\205\255\350\277\233\345\210\266", nullptr));
         groupBox->setTitle(QString());
-        checkSubPacket->setText(QCoreApplication::translate("MainWindow", "\345\210\206\345\214\205", nullptr));
-        pushButtonSaveRev_2->setText(QCoreApplication::translate("MainWindow", "\344\277\235\345\255\230\346\226\207\344\273\266", nullptr));
+        comboBoxSubPacket->setItemText(0, QString());
+        comboBoxSubPacket->setItemText(1, QCoreApplication::translate("MainWindow", "\345\210\206\345\214\205", nullptr));
+        comboBoxSubPacket->setItemText(2, QCoreApplication::translate("MainWindow", "\347\247\273\351\231\244\345\214\205", nullptr));
+
         groupBoxSend->setTitle(QCoreApplication::translate("MainWindow", "\345\217\221\351\200\201\345\214\272", nullptr));
         TextSend->setPlainText(QString());
         pushButtonSend->setText(QCoreApplication::translate("MainWindow", "\345\217\221\351\200\201", nullptr));
         groupBoxRev->setTitle(QCoreApplication::translate("MainWindow", "\346\216\245\346\224\266\345\214\272", nullptr));
-        TextRev->setPlainText(QString());
+        TextRevcpy->setPlainText(QString());
         radioButton->setText(QCoreApplication::translate("MainWindow", "\350\207\252\345\256\232\344\271\211\345\221\275\344\273\244", nullptr));
         groupBoxMutiSend->setTitle(QCoreApplication::translate("MainWindow", "\345\244\232\350\241\214\345\217\221\351\200\201\345\214\272", nullptr));
         label_3->setText(QCoreApplication::translate("MainWindow", "\345\217\221\351\200\201", nullptr));
