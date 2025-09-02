@@ -10,21 +10,26 @@
 #define UI_MAINWINDOW_H
 
 #include <QtCore/QVariant>
+#include <QtWidgets/QAction>
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QCheckBox>
 #include <QtWidgets/QComboBox>
 #include <QtWidgets/QGroupBox>
+#include <QtWidgets/QHBoxLayout>
 #include <QtWidgets/QLabel>
 #include <QtWidgets/QLineEdit>
 #include <QtWidgets/QMainWindow>
+#include <QtWidgets/QMenu>
 #include <QtWidgets/QMenuBar>
 #include <QtWidgets/QPlainTextEdit>
 #include <QtWidgets/QProgressBar>
 #include <QtWidgets/QPushButton>
 #include <QtWidgets/QRadioButton>
+#include <QtWidgets/QSpinBox>
 #include <QtWidgets/QStatusBar>
 #include <QtWidgets/QTextBrowser>
 #include <QtWidgets/QToolBar>
+#include <QtWidgets/QVBoxLayout>
 #include <QtWidgets/QWidget>
 #include "mycombobox.h"
 
@@ -55,20 +60,26 @@ public:
     QCheckBox *checkBoxAddNewShift;
     QCheckBox *checkBoxAutoDownload;
     QGroupBox *groupBoxRevSet;
-    QPushButton *pushButtonSaveRev;
+    QVBoxLayout *verticalLayout;
+    QHBoxLayout *horizontalLayout;
     QPushButton *pushButtonStopRev;
     QPushButton *pushButtonClearRev;
-    QCheckBox *checkBoxReVTime;
+    QHBoxLayout *horizontalLayout_3;
     QCheckBox *checkBoxRevHex;
-    QGroupBox *groupBox;
-    QPlainTextEdit *SubPacketText;
-    QComboBox *comboBoxSubPacket;
+    QCheckBox *checkBoxRevHex_2;
+    QHBoxLayout *horizontalLayout_4;
+    QCheckBox *checkBoxReVTime;
+    QVBoxLayout *verticalLayout_2;
+    QCheckBox *checkBoxReVTime_2;
+    QSpinBox *spinBox;
+    QHBoxLayout *horizontalLayout_2;
+    QCheckBox *checkBoxRevHex_3;
+    QPushButton *pushButtonSaveRev;
     QGroupBox *groupBoxSend;
     QPlainTextEdit *TextSend;
     QPushButton *pushButtonSend;
     QGroupBox *groupBoxRev;
     QTextBrowser *TextRev;
-    QPlainTextEdit *TextRevcpy;
     QRadioButton *radioButton;
     QGroupBox *groupBoxMutiSend;
     QLabel *label_3;
@@ -138,9 +149,17 @@ public:
     QLineEdit *lineEditMuti_FileName;
     QLabel *label_PART_2;
     QLineEdit *lineEditTime;
-    QMenuBar *menuBar;
     QToolBar *mainToolBar;
     QStatusBar *statusBar;
+    QMenuBar *menuBar;
+    QMenu *menu123;
+    QMenu *menu4566;
+    QMenu *menu;
+    QMenu *menu_2;
+    QMenu *menu_3;
+    QMenu *menu_4;
+    QMenu *menu_5;
+    QMenu *menu_6;
 
     void setupUi(QMainWindow *MainWindow)
     {
@@ -280,40 +299,100 @@ public:
         checkBoxAutoDownload->setGeometry(QRect(76, 123, 101, 22));
         groupBoxRevSet = new QGroupBox(centralWidget);
         groupBoxRevSet->setObjectName(QString::fromUtf8("groupBoxRevSet"));
-        groupBoxRevSet->setGeometry(QRect(10, 200, 171, 161));
-        pushButtonSaveRev = new QPushButton(groupBoxRevSet);
-        pushButtonSaveRev->setObjectName(QString::fromUtf8("pushButtonSaveRev"));
-        pushButtonSaveRev->setGeometry(QRect(10, 20, 61, 21));
+        groupBoxRevSet->setGeometry(QRect(10, 200, 178, 164));
+        verticalLayout = new QVBoxLayout(groupBoxRevSet);
+        verticalLayout->setSpacing(6);
+        verticalLayout->setContentsMargins(11, 11, 11, 11);
+        verticalLayout->setObjectName(QString::fromUtf8("verticalLayout"));
+        horizontalLayout = new QHBoxLayout();
+        horizontalLayout->setSpacing(6);
+        horizontalLayout->setObjectName(QString::fromUtf8("horizontalLayout"));
         pushButtonStopRev = new QPushButton(groupBoxRevSet);
         pushButtonStopRev->setObjectName(QString::fromUtf8("pushButtonStopRev"));
-        pushButtonStopRev->setGeometry(QRect(10, 50, 61, 21));
+
+        horizontalLayout->addWidget(pushButtonStopRev);
+
         pushButtonClearRev = new QPushButton(groupBoxRevSet);
         pushButtonClearRev->setObjectName(QString::fromUtf8("pushButtonClearRev"));
-        pushButtonClearRev->setGeometry(QRect(10, 80, 61, 21));
-        checkBoxReVTime = new QCheckBox(groupBoxRevSet);
-        checkBoxReVTime->setObjectName(QString::fromUtf8("checkBoxReVTime"));
-        checkBoxReVTime->setGeometry(QRect(80, 20, 77, 22));
-        checkBoxReVTime->setChecked(true);
+
+        horizontalLayout->addWidget(pushButtonClearRev);
+
+
+        verticalLayout->addLayout(horizontalLayout);
+
+        horizontalLayout_3 = new QHBoxLayout();
+        horizontalLayout_3->setSpacing(6);
+        horizontalLayout_3->setObjectName(QString::fromUtf8("horizontalLayout_3"));
         checkBoxRevHex = new QCheckBox(groupBoxRevSet);
         checkBoxRevHex->setObjectName(QString::fromUtf8("checkBoxRevHex"));
         checkBoxRevHex->setEnabled(true);
-        checkBoxRevHex->setGeometry(QRect(80, 50, 77, 22));
         checkBoxRevHex->setCheckable(true);
         checkBoxRevHex->setChecked(true);
         checkBoxRevHex->setTristate(false);
-        groupBox = new QGroupBox(groupBoxRevSet);
-        groupBox->setObjectName(QString::fromUtf8("groupBox"));
-        groupBox->setGeometry(QRect(10, 110, 151, 41));
-        SubPacketText = new QPlainTextEdit(groupBox);
-        SubPacketText->setObjectName(QString::fromUtf8("SubPacketText"));
-        SubPacketText->setGeometry(QRect(0, 20, 151, 21));
-        comboBoxSubPacket = new QComboBox(groupBox);
-        comboBoxSubPacket->addItem(QString());
-        comboBoxSubPacket->addItem(QString());
-        comboBoxSubPacket->addItem(QString());
-        comboBoxSubPacket->setObjectName(QString::fromUtf8("comboBoxSubPacket"));
-        comboBoxSubPacket->setGeometry(QRect(30, 2, 91, 20));
-        comboBoxSubPacket->setFont(font1);
+
+        horizontalLayout_3->addWidget(checkBoxRevHex);
+
+        checkBoxRevHex_2 = new QCheckBox(groupBoxRevSet);
+        checkBoxRevHex_2->setObjectName(QString::fromUtf8("checkBoxRevHex_2"));
+        checkBoxRevHex_2->setEnabled(true);
+        checkBoxRevHex_2->setCheckable(true);
+        checkBoxRevHex_2->setChecked(true);
+        checkBoxRevHex_2->setTristate(false);
+
+        horizontalLayout_3->addWidget(checkBoxRevHex_2);
+
+
+        verticalLayout->addLayout(horizontalLayout_3);
+
+        horizontalLayout_4 = new QHBoxLayout();
+        horizontalLayout_4->setSpacing(6);
+        horizontalLayout_4->setObjectName(QString::fromUtf8("horizontalLayout_4"));
+        checkBoxReVTime = new QCheckBox(groupBoxRevSet);
+        checkBoxReVTime->setObjectName(QString::fromUtf8("checkBoxReVTime"));
+        checkBoxReVTime->setChecked(true);
+
+        horizontalLayout_4->addWidget(checkBoxReVTime);
+
+        verticalLayout_2 = new QVBoxLayout();
+        verticalLayout_2->setSpacing(6);
+        verticalLayout_2->setObjectName(QString::fromUtf8("verticalLayout_2"));
+        checkBoxReVTime_2 = new QCheckBox(groupBoxRevSet);
+        checkBoxReVTime_2->setObjectName(QString::fromUtf8("checkBoxReVTime_2"));
+        checkBoxReVTime_2->setChecked(true);
+
+        verticalLayout_2->addWidget(checkBoxReVTime_2);
+
+        spinBox = new QSpinBox(groupBoxRevSet);
+        spinBox->setObjectName(QString::fromUtf8("spinBox"));
+
+        verticalLayout_2->addWidget(spinBox);
+
+
+        horizontalLayout_4->addLayout(verticalLayout_2);
+
+
+        verticalLayout->addLayout(horizontalLayout_4);
+
+        horizontalLayout_2 = new QHBoxLayout();
+        horizontalLayout_2->setSpacing(6);
+        horizontalLayout_2->setObjectName(QString::fromUtf8("horizontalLayout_2"));
+        checkBoxRevHex_3 = new QCheckBox(groupBoxRevSet);
+        checkBoxRevHex_3->setObjectName(QString::fromUtf8("checkBoxRevHex_3"));
+        checkBoxRevHex_3->setEnabled(true);
+        checkBoxRevHex_3->setCheckable(true);
+        checkBoxRevHex_3->setChecked(true);
+        checkBoxRevHex_3->setTristate(false);
+
+        horizontalLayout_2->addWidget(checkBoxRevHex_3);
+
+        pushButtonSaveRev = new QPushButton(groupBoxRevSet);
+        pushButtonSaveRev->setObjectName(QString::fromUtf8("pushButtonSaveRev"));
+
+        horizontalLayout_2->addWidget(pushButtonSaveRev);
+
+
+        verticalLayout->addLayout(horizontalLayout_2);
+
         groupBoxSend = new QGroupBox(centralWidget);
         groupBoxSend->setObjectName(QString::fromUtf8("groupBoxSend"));
         groupBoxSend->setGeometry(QRect(180, 392, 541, 141));
@@ -332,12 +411,7 @@ public:
         groupBoxRev->setGeometry(QRect(180, 0, 341, 361));
         TextRev = new QTextBrowser(groupBoxRev);
         TextRev->setObjectName(QString::fromUtf8("TextRev"));
-        TextRev->setGeometry(QRect(5, 11, 331, 341));
-        TextRevcpy = new QPlainTextEdit(groupBoxRev);
-        TextRevcpy->setObjectName(QString::fromUtf8("TextRevcpy"));
-        TextRevcpy->setGeometry(QRect(160, 250, 171, 101));
-        TextRevcpy->setLayoutDirection(Qt::LeftToRight);
-        TextRevcpy->setReadOnly(true);
+        TextRev->setGeometry(QRect(20, 10, 331, 341));
         radioButton = new QRadioButton(centralWidget);
         radioButton->setObjectName(QString::fromUtf8("radioButton"));
         radioButton->setGeometry(QRect(500, 372, 81, 16));
@@ -414,6 +488,9 @@ public:
         pushButtonMuti5 = new QPushButton(groupBoxMutiSend);
         pushButtonMuti5->setObjectName(QString::fromUtf8("pushButtonMuti5"));
         pushButtonMuti5->setGeometry(QRect(158, 154, 31, 23));
+        QFont font2;
+        font2.setFamily(QString::fromUtf8("Agency FB"));
+        pushButtonMuti5->setFont(font2);
         lineEditMuti6 = new QLineEdit(groupBoxMutiSend);
         lineEditMuti6->setObjectName(QString::fromUtf8("lineEditMuti6"));
         lineEditMuti6->setGeometry(QRect(30, 184, 121, 20));
@@ -535,9 +612,9 @@ public:
         sizePolicy1.setHeightForWidth(progressBar_PART->sizePolicy().hasHeightForWidth());
         progressBar_PART->setSizePolicy(sizePolicy1);
         progressBar_PART->setMinimumSize(QSize(0, 0));
-        QFont font2;
-        font2.setPointSize(13);
-        progressBar_PART->setFont(font2);
+        QFont font3;
+        font3.setPointSize(13);
+        progressBar_PART->setFont(font3);
         progressBar_PART->setMouseTracking(false);
         progressBar_PART->setTabletTracking(false);
         progressBar_PART->setContextMenuPolicy(Qt::DefaultContextMenu);
@@ -555,7 +632,7 @@ public:
         sizePolicy1.setHeightForWidth(progressBar_BOOT_Combine->sizePolicy().hasHeightForWidth());
         progressBar_BOOT_Combine->setSizePolicy(sizePolicy1);
         progressBar_BOOT_Combine->setMinimumSize(QSize(0, 0));
-        progressBar_BOOT_Combine->setFont(font2);
+        progressBar_BOOT_Combine->setFont(font3);
         progressBar_BOOT_Combine->setMouseTracking(false);
         progressBar_BOOT_Combine->setTabletTracking(false);
         progressBar_BOOT_Combine->setContextMenuPolicy(Qt::DefaultContextMenu);
@@ -573,7 +650,7 @@ public:
         sizePolicy1.setHeightForWidth(progressBar_APP->sizePolicy().hasHeightForWidth());
         progressBar_APP->setSizePolicy(sizePolicy1);
         progressBar_APP->setMinimumSize(QSize(0, 0));
-        progressBar_APP->setFont(font2);
+        progressBar_APP->setFont(font3);
         progressBar_APP->setMouseTracking(false);
         progressBar_APP->setTabletTracking(false);
         progressBar_APP->setContextMenuPolicy(Qt::DefaultContextMenu);
@@ -626,7 +703,7 @@ public:
         sizePolicy1.setHeightForWidth(progressBar->sizePolicy().hasHeightForWidth());
         progressBar->setSizePolicy(sizePolicy1);
         progressBar->setMinimumSize(QSize(0, 0));
-        progressBar->setFont(font2);
+        progressBar->setFont(font3);
         progressBar->setMouseTracking(false);
         progressBar->setTabletTracking(false);
         progressBar->setContextMenuPolicy(Qt::DefaultContextMenu);
@@ -654,9 +731,9 @@ public:
         lineEditTime = new QLineEdit(centralWidget);
         lineEditTime->setObjectName(QString::fromUtf8("lineEditTime"));
         lineEditTime->setGeometry(QRect(650, 370, 31, 16));
-        QFont font3;
-        font3.setPointSize(8);
-        lineEditTime->setFont(font3);
+        QFont font4;
+        font4.setPointSize(8);
+        lineEditTime->setFont(font4);
         MainWindow->setCentralWidget(centralWidget);
         pushButton_EraseAll->raise();
         labelMS->raise();
@@ -676,10 +753,6 @@ public:
         groupBox_esp32->raise();
         groupBox_stm32->raise();
         lineEditTime->raise();
-        menuBar = new QMenuBar(MainWindow);
-        menuBar->setObjectName(QString::fromUtf8("menuBar"));
-        menuBar->setGeometry(QRect(0, 0, 728, 23));
-        MainWindow->setMenuBar(menuBar);
         mainToolBar = new QToolBar(MainWindow);
         mainToolBar->setObjectName(QString::fromUtf8("mainToolBar"));
         mainToolBar->setFloatable(false);
@@ -688,6 +761,35 @@ public:
         statusBar->setObjectName(QString::fromUtf8("statusBar"));
         statusBar->setSizeGripEnabled(true);
         MainWindow->setStatusBar(statusBar);
+        menuBar = new QMenuBar(MainWindow);
+        menuBar->setObjectName(QString::fromUtf8("menuBar"));
+        menuBar->setGeometry(QRect(0, 0, 728, 23));
+        menu123 = new QMenu(menuBar);
+        menu123->setObjectName(QString::fromUtf8("menu123"));
+        menu4566 = new QMenu(menuBar);
+        menu4566->setObjectName(QString::fromUtf8("menu4566"));
+        menu = new QMenu(menuBar);
+        menu->setObjectName(QString::fromUtf8("menu"));
+        menu_2 = new QMenu(menuBar);
+        menu_2->setObjectName(QString::fromUtf8("menu_2"));
+        menu_3 = new QMenu(menuBar);
+        menu_3->setObjectName(QString::fromUtf8("menu_3"));
+        menu_4 = new QMenu(menuBar);
+        menu_4->setObjectName(QString::fromUtf8("menu_4"));
+        menu_5 = new QMenu(menuBar);
+        menu_5->setObjectName(QString::fromUtf8("menu_5"));
+        menu_6 = new QMenu(menuBar);
+        menu_6->setObjectName(QString::fromUtf8("menu_6"));
+        MainWindow->setMenuBar(menuBar);
+
+        menuBar->addAction(menu123->menuAction());
+        menuBar->addAction(menu4566->menuAction());
+        menuBar->addAction(menu->menuAction());
+        menuBar->addAction(menu_2->menuAction());
+        menuBar->addAction(menu_3->menuAction());
+        menuBar->addAction(menu_4->menuAction());
+        menuBar->addAction(menu_5->menuAction());
+        menuBar->addAction(menu_6->menuAction());
 
         retranslateUi(MainWindow);
 
@@ -753,21 +855,18 @@ public:
         checkBoxAddNewShift->setText(QCoreApplication::translate("MainWindow", "\345\217\221\351\200\201\346\226\260\350\241\214", nullptr));
         checkBoxAutoDownload->setText(QCoreApplication::translate("MainWindow", "\350\207\252\345\220\257\345\212\250\344\270\213\350\275\275", nullptr));
         groupBoxRevSet->setTitle(QCoreApplication::translate("MainWindow", "\346\216\245\346\224\266\350\256\276\347\275\256", nullptr));
-        pushButtonSaveRev->setText(QCoreApplication::translate("MainWindow", "\344\277\235\345\255\230\346\226\207\344\273\266", nullptr));
         pushButtonStopRev->setText(QCoreApplication::translate("MainWindow", "\346\230\276\347\244\272\344\270\255", nullptr));
         pushButtonClearRev->setText(QCoreApplication::translate("MainWindow", "\346\270\205\347\251\272\346\216\245\346\224\266\345\214\272", nullptr));
-        checkBoxReVTime->setText(QCoreApplication::translate("MainWindow", "\346\216\245\346\224\266\346\227\266\351\227\264", nullptr));
         checkBoxRevHex->setText(QCoreApplication::translate("MainWindow", "\345\215\201\345\205\255\350\277\233\345\210\266", nullptr));
-        groupBox->setTitle(QString());
-        comboBoxSubPacket->setItemText(0, QString());
-        comboBoxSubPacket->setItemText(1, QCoreApplication::translate("MainWindow", "\345\210\206\345\214\205", nullptr));
-        comboBoxSubPacket->setItemText(2, QCoreApplication::translate("MainWindow", "\347\247\273\351\231\244\345\214\205", nullptr));
-
+        checkBoxRevHex_2->setText(QCoreApplication::translate("MainWindow", "\346\225\260\346\215\256\345\210\206\345\214\205", nullptr));
+        checkBoxReVTime->setText(QCoreApplication::translate("MainWindow", "\345\212\240\346\227\266\351\227\264\346\210\263", nullptr));
+        checkBoxReVTime_2->setText(QCoreApplication::translate("MainWindow", "\346\227\266\351\227\264\345\210\206\345\214\205", nullptr));
+        checkBoxRevHex_3->setText(QCoreApplication::translate("MainWindow", "\350\275\254\345\255\230\346\225\260\346\215\256", nullptr));
+        pushButtonSaveRev->setText(QCoreApplication::translate("MainWindow", "\344\277\235\345\255\230\346\226\207\344\273\266", nullptr));
         groupBoxSend->setTitle(QCoreApplication::translate("MainWindow", "\345\217\221\351\200\201\345\214\272", nullptr));
         TextSend->setPlainText(QString());
         pushButtonSend->setText(QCoreApplication::translate("MainWindow", "\345\217\221\351\200\201", nullptr));
         groupBoxRev->setTitle(QCoreApplication::translate("MainWindow", "\346\216\245\346\224\266\345\214\272", nullptr));
-        TextRevcpy->setPlainText(QString());
         radioButton->setText(QCoreApplication::translate("MainWindow", "\350\207\252\345\256\232\344\271\211\345\221\275\344\273\244", nullptr));
         groupBoxMutiSend->setTitle(QCoreApplication::translate("MainWindow", "\345\244\232\350\241\214\345\217\221\351\200\201\345\214\272", nullptr));
         label_3->setText(QCoreApplication::translate("MainWindow", "\345\217\221\351\200\201", nullptr));
@@ -846,6 +945,14 @@ public:
         lineEditMuti_FileName->setPlaceholderText(QCoreApplication::translate("MainWindow", "\351\200\211\346\213\251.Hex\346\210\226.bin\346\226\207\344\273\266", nullptr));
         label_PART_2->setText(QCoreApplication::translate("MainWindow", ".bin\350\265\267\345\247\213\345\234\260\345\235\200", nullptr));
         lineEditTime->setText(QCoreApplication::translate("MainWindow", "1000", nullptr));
+        menu123->setTitle(QCoreApplication::translate("MainWindow", "\351\200\232\350\256\257\347\253\257\345\217\243", nullptr));
+        menu4566->setTitle(QCoreApplication::translate("MainWindow", "\344\270\262\345\217\243\350\256\276\347\275\256", nullptr));
+        menu->setTitle(QCoreApplication::translate("MainWindow", "\346\230\276\347\244\272", nullptr));
+        menu_2->setTitle(QCoreApplication::translate("MainWindow", "\345\217\221\351\200\201", nullptr));
+        menu_3->setTitle(QCoreApplication::translate("MainWindow", "\345\244\232\345\255\227\347\254\246\344\270\262", nullptr));
+        menu_4->setTitle(QCoreApplication::translate("MainWindow", "\345\260\217\345\267\245\345\205\267", nullptr));
+        menu_5->setTitle(QCoreApplication::translate("MainWindow", "\345\270\256\345\212\251", nullptr));
+        menu_6->setTitle(QCoreApplication::translate("MainWindow", "\350\201\224\347\263\273\344\275\234\350\200\205", nullptr));
     } // retranslateUi
 
 };

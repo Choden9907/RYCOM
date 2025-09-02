@@ -28,6 +28,7 @@ ICON = src\resource\ico\rymculogo.icns
 UI_DIR=.\src
 
 SOURCES += \
+    src/frameparse.cpp \
     src\main.cpp \
     src\mainwindow.cpp \
     src\mycombobox.cpp \
@@ -39,6 +40,7 @@ SOURCES += \
     src\ryesp32isp.cpp
 
 HEADERS += \
+    src/frameparse.h \
     src\mainwindow.h \
     src\mycombobox.h \
     src\ryisp.h \
@@ -55,3 +57,7 @@ FORMS += \
 
 RESOURCES += \
     src\resource\rycomres.qrc
+
+DISTFILES += \
+    Ggg.qml \
+    GggForm.ui.qml

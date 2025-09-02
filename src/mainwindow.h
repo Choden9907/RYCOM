@@ -157,10 +157,10 @@ private:
     bool MutiState[10];//多行选中状态
     int LastSend = 0;//多行循环发送起始位置
 
+    //定时器
     QTimer *PriecSendTimer;//周期发送定时器，和多行的循环发送共用
     QTimer *recvDelayTimer;//接收延时定时器，解决中文分段乱码
 
-    QDateTime curDateTime;//系统时间变量
     //QFileSystemWatcher* my_watcher;//文件监控对象
 
     //定时器用于监控文件变化
@@ -181,9 +181,9 @@ private:
     double myobjectRate;//dpi比例，用于调整主窗口的大小
     char ISisping;//1：表示正在进行STM32程序下载，2：表示正在进行ESP32程序下载
     RY_Ymodem ry_ymodem;
-
 private:
     void PutDataToTextRev(QString stirng, DIS_TYPE type);
+    void Display(QString stirng, DIS_TYPE type);
     void SaveConfig();
     void LoadConfig();
     void Pre_on_pushButtonSend_clicked();//多行周期发送预处理函数

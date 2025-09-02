@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include <QDebug>
+#include <frameparse.h>
 /***********************************************************
  * 窗口构造函数，初始化工作在这里完成！
  * 1.失能和隐藏相应控件
@@ -17,88 +18,91 @@ MainWindow::MainWindow(QWidget *parent) :
     //根据系统选择参数：Windows，MACos,Linux
     refreshDPI(MACos); //根据系统dpi调整窗体大小
     //connect(screen, &QScreen::logicalDotsPerInchChanged, this, &MainWindow::onLogicalDotsPerInchChanged);
-        //失能和隐藏相应控件
-        ui->pushButtonSend->setEnabled(false);//使相应的按钮不可用
-        ui->checkBoxPeriodicSend->setEnabled(false);
-        ui->checkBoxPeriodicMutiSend->setEnabled(false);
-        ui->lineEditTime->setEnabled(false);
-        ui->checkBoxAddNewShift->setEnabled(false);
-        ui->checkBoxSendHex->setEnabled(false);
-        ui->groupBoxMutiSend->hide();//隐藏多行发送区
+    //失能和隐藏相应控件
+    ui->pushButtonSend->setEnabled(false);//使相应的按钮不可用
+    ui->checkBoxPeriodicSend->setEnabled(false);
+    ui->checkBoxPeriodicMutiSend->setEnabled(false);
+    ui->lineEditTime->setEnabled(false);
+    ui->checkBoxAddNewShift->setEnabled(false);
+    ui->checkBoxSendHex->setEnabled(false);
+    ui->groupBoxMutiSend->hide();//隐藏多行发送区
 
-        ui->groupBoxRev->setFixedWidth(541*myobjectRate);//根据屏幕分辨率不一样固定接收组的大小
-        ui->TextRev->setFixedWidth(521*myobjectRate);//根据屏幕分辨率不一样固定接收窗口的大小
-        this->setFixedSize(729*myobjectRate,584*myobjectRate);//根据屏幕分辨率不一样固定主窗口的大小
+    //根据屏幕分辨率不一样设置接收区的大小
+    ui->groupBoxRev->setFixedWidth(541*myobjectRate);
+    //根据屏幕分辨率不一样固定接收窗口的大小
+    ui->TextRev->setFixedWidth(521*myobjectRate);
+    //根据屏幕分辨率不一样主窗口的大小
+    this->setFixedSize(729*myobjectRate,584*myobjectRate);
 
 
-        //创建周期发送、时间显示、延时接收定时器，并初始化
-        PriecSendTimer = new QTimer;
-        PriecSendTimer->setInterval(1000);//默认周期1000ms
-        connect(PriecSendTimer,&QTimer::timeout,this,[=](){Pre_on_pushButtonSend_clicked();});//定时器槽关联,关联至发送按钮槽函数，即定时到来时，自动发送数据
+    //创建周期发送、时间显示、延时接收定时器，并初始化
+    PriecSendTimer = new QTimer;
+    PriecSendTimer->setInterval(1000);//默认周期1000ms
+    connect(PriecSendTimer,&QTimer::timeout,this,[=](){Pre_on_pushButtonSend_clicked();});//定时器槽关联,关联至发送按钮槽函数，即定时到来时，自动发送数据
 
-        QTimer *DateTimer = new QTimer(this);//状态栏显示时间，日期
-        connect(DateTimer,&QTimer::timeout,this,[=](){time_update();});
-        DateTimer->start(1000); //每隔1000ms发送timeout的信号
+    QTimer *DateTimer = new QTimer(this);//状态栏显示时间，日期
+    connect(DateTimer,&QTimer::timeout,this,[=](){time_update();});
+    DateTimer->start(1000); //每隔1000ms发送timeout的信号
 
-        recvDelayTimer = new QTimer(this);//接收延时定时器，解决中文分段乱码
-        recvDelayTimer->stop();
-        connect(recvDelayTimer,SIGNAL(timeout()),this,SLOT(MyComRevSlot()));//接收延时到达，进行串口接收数据处理
+    recvDelayTimer = new QTimer(this);//接收延时定时器，解决中文分段乱码
+    recvDelayTimer->stop();
+    connect(recvDelayTimer,SIGNAL(timeout()),this,SLOT(MyComRevSlot()));//接收延时到达，进行串口接收数据处理
 
-        //创建文件监控定时器
-         FileChanged = new QTimer;
-         connect(FileChanged,&QTimer::timeout,this,[=](){timer_FileChanged();});
-         FileChanged->start(1000);
+    //创建文件监控定时器
+        FileChanged = new QTimer;
+        connect(FileChanged,&QTimer::timeout,this,[=](){timer_FileChanged();});
+        FileChanged->start(1000);
 
-        //串口接收函数关联
-        connect(&MyCom,SIGNAL(readyRead()),this,SLOT(portRecvDataDelay()));//串口数据接收过程：系统收到串口数据后，进入接收延时函数portRecvDataDelay(),
-                                                                           //函数中停止定时器，再启动定时器，定时时间到了再进入接收处理函数MyComRevSlot()
-                                                                           //因此，只有收到数据后，在连续的定时时间内都没有数据到了，才会进行数据处理，否则
-                                                                           //一直在接收数据，这是为了解决收中文数据时，分段接收显示乱码问题。
-        //增加波特率自定义输入
-        connect(ui->comboBoxComBaud,SIGNAL(currentIndexChanged(int)),this,SLOT(SLOT_baudIndexChanged(int)));
-        //connect(ui->comboBoxComBaud,SIGNAL( currentTextChanged(int)),this,SLOT(SLOT_baudChanged(QString)));
-        //增加文件更改监控
-        //my_watcher = new QFileSystemWatcher(this);//文件监控对象
-        //my_watcher->addPath("C:/Users/Hugh/Desktop/temp/Template.hex");
-        //connect(my_watcher,SIGNAL(fileChanged(QString)),this,SLOT(MyFileUpdated()));
+    //串口接收函数关联
+    connect(&MyCom,SIGNAL(readyRead()),this,SLOT(portRecvDataDelay()));//串口数据接收过程：系统收到串口数据后，进入接收延时函数portRecvDataDelay(),
+                                                                        //函数中停止定时器，再启动定时器，定时时间到了再进入接收处理函数MyComRevSlot()
+                                                                        //因此，只有收到数据后，在连续的定时时间内都没有数据到了，才会进行数据处理，否则
+                                                                        //一直在接收数据，这是为了解决收中文数据时，分段接收显示乱码问题。
+    //增加波特率自定义输入
+    connect(ui->comboBoxComBaud,SIGNAL(currentIndexChanged(int)),this,SLOT(SLOT_baudIndexChanged(int)));
+    //connect(ui->comboBoxComBaud,SIGNAL( currentTextChanged(int)),this,SLOT(SLOT_baudChanged(QString)));
+    //增加文件更改监控
+    //my_watcher = new QFileSystemWatcher(this);//文件监控对象
+    //my_watcher->addPath("C:/Users/Hugh/Desktop/temp/Template.hex");
+    //connect(my_watcher,SIGNAL(fileChanged(QString)),this,SLOT(MyFileUpdated()));
 
-        //设置底部状态栏，以及相应的标签初始化
-        QStatusBar *STABar = statusBar();//获取状态栏
-        qlbSendSum = new QLabel(this);//创建发送统计标签
-        qlbRevSum  = new QLabel(this);//创建接收统计标签
-        currentTimeLabel = new QLabel(this); // 创建时间，日期显示标签
-        qlbLinkRYMCU = new QLabel(this);//官网链接标签对象
-        qlbLinkSource = new QLabel(this);//源码链接标签对象
+    //设置底部状态栏，以及相应的标签初始化
+    QStatusBar *STABar = statusBar();//获取状态栏
+    qlbSendSum = new QLabel(this);//创建发送统计标签
+    qlbRevSum  = new QLabel(this);//创建接收统计标签
+    currentTimeLabel = new QLabel(this); // 创建时间，日期显示标签
+    qlbLinkRYMCU = new QLabel(this);//官网链接标签对象
+    qlbLinkSource = new QLabel(this);//源码链接标签对象
 
-        qlbLinkRYMCU->setMinimumSize(90, 20);// 设置标签最小大小
-        qlbLinkSource->setMinimumSize(90, 20);
-        qlbSendSum->setMinimumSize(100, 20);
-        qlbRevSum->setMinimumSize(100, 20);
-        currentTimeLabel->setMinimumSize(100, 20);
+    qlbLinkRYMCU->setMinimumSize(90, 20);// 设置标签最小大小
+    qlbLinkSource->setMinimumSize(90, 20);
+    qlbSendSum->setMinimumSize(100, 20);
+    qlbRevSum->setMinimumSize(100, 20);
+    currentTimeLabel->setMinimumSize(100, 20);
 
-         ComSendSum = 0;
-         ComRevSum  = 0;
+    ComSendSum = 0;
+    ComRevSum  = 0;
 
-         setNumOnLabel(qlbSendSum, "Tx: ", ComSendSum);
-         setNumOnLabel( qlbRevSum, "Rx: ", ComRevSum);
+    setNumOnLabel(qlbSendSum, "Tx: ", ComSendSum);
+    setNumOnLabel( qlbRevSum, "Rx: ", ComRevSum);
 
-         STABar->addPermanentWidget(qlbSendSum);// 从右往左依次添加
-         STABar->addPermanentWidget(qlbRevSum);
-         STABar->addPermanentWidget(currentTimeLabel);
+    STABar->addPermanentWidget(qlbSendSum);// 从右往左依次添加
+    STABar->addPermanentWidget(qlbRevSum);
+    STABar->addPermanentWidget(currentTimeLabel);
 
-         STABar->addWidget(qlbLinkRYMCU);// 从左往右依次添加
-         STABar->addWidget(qlbLinkSource);
+    STABar->addWidget(qlbLinkRYMCU);// 从左往右依次添加
+    STABar->addWidget(qlbLinkSource);
 
-         qlbLinkRYMCU->setOpenExternalLinks(true);//状态栏显示官网、源码链接
-         qlbLinkRYMCU->setText("<style> a {text-decoration: none} </style> <a href=\"https://rymcu.com\">--RYMCU官网--");// 无下划线
-         qlbLinkSource->setOpenExternalLinks(true);
-         qlbLinkSource->setText("<style> a {text-decoration: none} </style> <a href=\"https://github.com/rymcu/RYCOM\">--助手源代码V2.6.2--");// 无下划线
-         //隐藏进度条
-         ui->progressBar->setVisible(false);
-         //串口指示灯设置为只读控件，屏蔽鼠标点击事件
-         //ui->radioButton_led->setAttribute(Qt::WA_TransparentForMouseEvents,QIODevice::ReadOnly);
+    qlbLinkRYMCU->setOpenExternalLinks(true);//状态栏显示官网、源码链接
+    qlbLinkRYMCU->setText("<style> a {text-decoration: none} </style> <a href=\"https://rymcu.com\">--RYMCU官网--");// 无下划线
+    qlbLinkSource->setOpenExternalLinks(true);
+    qlbLinkSource->setText("<style> a {text-decoration: none} </style> <a href=\"https://github.com/rymcu/RYCOM\">--助手源代码V2.6.2--");// 无下划线
+    //隐藏进度条
+    //ui->progressBar->setVisible(false);
+    //串口指示灯设置为只读控件，屏蔽鼠标点击事件
+    //ui->radioButton_led->setAttribute(Qt::WA_TransparentForMouseEvents,QIODevice::ReadOnly);
 
-         LoadConfig();
+    LoadConfig();
 }
 
 
@@ -162,7 +166,20 @@ void MainWindow::MyComRevSlot()
     
     //停止接收延时定时器，读取串口接收到的数据，并格式化数据
     recvDelayTimer->stop();
-    MyComRevBUff = MyCom.readAll();
+    MyComRevBUff.append(MyCom.readAll());
+    QList<QByteArray> result = frameparse::GetDataFrame(MyComRevBUff);
+    for(QByteArray frame:result)
+    {
+        QString StrTemp1 = frame.toHex().toUpper();//转换为16进制数，并大写
+        QString StrTemp2;
+        for(int i = 0; i<StrTemp1.length (); i+=2)//整理字符串，即添加空格
+        {
+            StrTemp2 += StrTemp1.mid (i,2);
+            StrTemp2 += " "; // 每个字节后添加空格，最终格式为"XX XX XX "
+        }
+        PutDataToTextRev(StrTemp2, DIS_RECV_TYPE);
+    }
+    return;
 
     StrTemp = QString::fromLocal8Bit(MyComRevBUff);
 
@@ -171,7 +188,7 @@ void MainWindow::MyComRevSlot()
     setNumOnLabel(qlbRevSum, "Rx: ", ComRevSum);
 
     //获取串口数据接收的系统时间，备后续使用
-    curDateTime = QDateTime::currentDateTime();
+    // QDateTime curDateTime = QDateTime::currentDateTime();
     //StrTimeDate = curDateTime.toString("[yyyy-MM-dd hh:mm:ss.zzz] ");
 
     //stm32 ISP期间不显示接收数据
@@ -204,51 +221,45 @@ void MainWindow::MyComRevSlot()
         }
 
         if(SubPacket);
-        //不做处理
-        if(ui->comboBoxSubPacket->currentText() == "")
-        {
-            PutDataToTextRev(StrTemp1, DIS_RECV_TYPE);
-            return;
-        }
         
         // 修正1：调整正则表达式，匹配带结尾空格的完整模式 "FC XX XX 0E "
         //QRegularExpression pattern("(FA [0-9A-F]{2} [0-9A-F]{2} 0E )");toPlainText
-        QString reg = ui->SubPacketText->toPlainText();
-        if(reg.isEmpty())
-        {
-            PutDataToTextRev(StrTemp1, DIS_RECV_TYPE);
-            return;
-        }
-        //QRegularExpression pattern("(FA [0-9A-F]{2} 0[0-9A-F]{1})");
-        QRegularExpression pattern(reg);
-        QRegularExpressionMatchIterator it = pattern.globalMatch(StrTemp1);
+//        QString reg = ui->SubPacketText->toPlainText();
+//        if(reg.isEmpty())
+//        {
+//            PutDataToTextRev(StrTemp1, DIS_RECV_TYPE);
+//            return;
+//        }
+//        //QRegularExpression pattern("(FA [0-9A-F]{2} 0[0-9A-F]{1})");
+//        QRegularExpression pattern(reg);
+//        QRegularExpressionMatchIterator it = pattern.globalMatch(StrTemp1);
 
-        // 先收集所有匹配的起始位置
-        QList<int> matchStarts;
-        while (it.hasNext()) {
-            QRegularExpressionMatch match = it.next();
-            matchStarts.append(match.capturedStart());
-        }
+//        // 先收集所有匹配的起始位置
+//        QList<int> matchStarts;
+//        while (it.hasNext()) {
+//            QRegularExpressionMatch match = it.next();
+//            matchStarts.append(match.capturedStart());
+//        }
 
-        if(matchStarts.isEmpty())
-        {
-            PutDataToTextRev(StrTemp1, DIS_RECV_TYPE);
-            return;
-        }
+//        if(matchStarts.isEmpty())
+//        {
+//            PutDataToTextRev(StrTemp1, DIS_RECV_TYPE);
+//            return;
+//        }
 
-        // 处理每个匹配区间（当前开始到下一个开始）并直接传递
-        for (int i = 0; i < matchStarts.size(); ++i) {
-            int start = matchStarts[i];
-            // 计算结束位置：如果是最后一个匹配，则到字符串末尾，否则到下一个匹配的开始
-            int end = (i == matchStarts.size() - 1) ? StrTemp1.length() : matchStarts[i + 1];
+//        // 处理每个匹配区间（当前开始到下一个开始）并直接传递
+//        for (int i = 0; i < matchStarts.size(); ++i) {
+//            int start = matchStarts[i];
+//            // 计算结束位置：如果是最后一个匹配，则到字符串末尾，否则到下一个匹配的开始
+//            int end = (i == matchStarts.size() - 1) ? StrTemp1.length() : matchStarts[i + 1];
             
-            // 截取从当前匹配开始到下一个匹配开始（或字符串结束）的内容
-            QString subString = StrTemp1.mid(start, end - start);
+//            // 截取从当前匹配开始到下一个匹配开始（或字符串结束）的内容
+//            QString subString = StrTemp1.mid(start, end - start);
 
-            // 直接将子字符串传递给PutDataToTextRev函数
-            PutDataToTextRev(subString, DIS_RECV_TYPE);
+//            // 直接将子字符串传递给PutDataToTextRev函数
+//            PutDataToTextRev(subString, DIS_RECV_TYPE);
 
-        }
+//        }
 
     }
 
@@ -753,18 +764,18 @@ void MainWindow::on_checkBoxReVTime_stateChanged(int arg1)
  ***********************************************************/
 void MainWindow::on_checkSubPacket_stateChanged(int arg1)
 {
-    if(arg1 == false)//未选中
-    {
-        SubPacket = false;//接收串口数据时间显示标志位
-        ui->SubPacketText->setEnabled(false);
-    }
-    else
-    {
-        SubPacket = true;
-        ui->SubPacketText->setEnabled(true);
+//    if(arg1 == false)//未选中
+//    {
+//        SubPacket = false;//接收串口数据时间显示标志位
+//        ui->SubPacketText->setEnabled(false);
+//    }
+//    else
+//    {
+//        SubPacket = true;
+//        ui->SubPacketText->setEnabled(true);
 
 
-    }
+//    }
 }
 
 
@@ -1083,7 +1094,7 @@ void MainWindow::PutDataToTextRev(QString stirng, DIS_TYPE type)
     QString RecvDataHeadString = "收- - ->●";
 
     QString DispalyString;
-
+    QDateTime curDateTime = QDateTime::currentDateTime();
     if (TimeDateDisp) {
         DispalyString.insert(0,curDateTime.toString("[hh:mm:ss.zzz]")); // 换行后添加时间（如果启用）
     }
@@ -1107,6 +1118,37 @@ void MainWindow::PutDataToTextRev(QString stirng, DIS_TYPE type)
     ui->TextRev->moveCursor(QTextCursor::End);
 }
 
+
+void MainWindow::Display(QString stirng, DIS_TYPE type)
+{
+
+    QString SendDataHeadString = "发- - ->◎";
+    QString RecvDataHeadString = "收- - ->●";
+    QDateTime curDateTime = QDateTime::currentDateTime();
+    QString DispalyString;
+
+    if (TimeDateDisp) {
+        DispalyString.insert(0,curDateTime.toString("[hh:mm:ss.zzz]")); // 换行后添加时间（如果启用）
+    }
+
+    //插入换行
+    DispalyString.insert(0,"\r\n"); // 换行后添加时间（如果启用）
+    switch(type)
+    {
+        case DIS_SENG_TYPE:
+            DispalyString.append(SendDataHeadString + stirng);
+        break;
+        case DIS_RECV_TYPE:
+            DispalyString.append(RecvDataHeadString + stirng);
+        break;
+        case DIS_OTHER:
+            DispalyString = stirng;
+        break;
+    }
+
+    ui->TextRev->insertPlainText(DispalyString);
+    ui->TextRev->moveCursor(QTextCursor::End);
+}
 
 void MainWindow::SaveConfig()
 {
